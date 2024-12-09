@@ -12,12 +12,15 @@ import com.github.exopandora.shouldersurfing.config.Config;
 import com.github.exopandora.shouldersurfing.mixinducks.OptionsDuck;
 import com.github.exopandora.shouldersurfing.plugin.ShoulderSurfingRegistrar;
 import net.minecraft.client.Camera;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.HitResult;
+
+import java.util.List;
 
 public class ShoulderSurfingImpl implements IShoulderSurfing
 {
@@ -135,10 +138,11 @@ public class ShoulderSurfingImpl implements IShoulderSurfing
 	
 	private boolean shouldEntityAimAtTargetInternal(LivingEntity cameraEntity, Minecraft minecraft)
 	{
+		List<? extends String> turnWhenKeybinds = Config.CLIENT.getTurnWhenKeybinds();
 		return this.isAiming && Config.CLIENT.getCrosshairType().isAimingDecoupled() || !this.isAiming && Config.CLIENT.isCameraDecoupled() &&
 			(isUsingItem(cameraEntity, minecraft) || !cameraEntity.isFallFlying() && (isInteracting(cameraEntity, minecraft) &&
 				!(Config.CLIENT.getPickVector() == PickVector.PLAYER && Config.CLIENT.getCrosshairType() == CrosshairType.DYNAMIC) ||
-				isAttacking(minecraft) || isPicking(minecraft)));
+				isAttacking(minecraft) || isPicking(minecraft) || isPressingKeyOf(turnWhenKeybinds)));
 	}
 	
 	public boolean shouldEntityAimAtTarget(LivingEntity cameraEntity, Minecraft minecraft)
@@ -171,6 +175,11 @@ public class ShoulderSurfingImpl implements IShoulderSurfing
 	private static boolean isPicking(Minecraft minecraft)
 	{
 		return minecraft.options.keyPickItem.isDown() && Config.CLIENT.getTurningModeWhenPicking().shouldTurn(minecraft.hitResult);
+	}
+	
+	private boolean isPressingKeyOf(List<? extends String> keybinds)
+	{
+		return !keybinds.isEmpty() && keybinds.stream().anyMatch(key -> KeyMapping.get(key) != null && KeyMapping.get(key).isDown());
 	}
 	
 	public boolean shouldEntityFollowCamera(LivingEntity cameraEntity)

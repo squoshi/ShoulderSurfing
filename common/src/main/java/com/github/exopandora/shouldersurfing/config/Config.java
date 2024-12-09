@@ -7,6 +7,7 @@ import com.github.exopandora.shouldersurfing.api.model.Perspective;
 import com.github.exopandora.shouldersurfing.api.model.PickOrigin;
 import com.github.exopandora.shouldersurfing.api.model.PickVector;
 import com.github.exopandora.shouldersurfing.api.model.TurningMode;
+import com.google.common.collect.Lists;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -115,6 +116,7 @@ public class Config
 		private final ConfigValue<TurningMode> turningModeWhenAttacking;
 		private final ConfigValue<TurningMode> turningModeWhenInteraction;
 		private final ConfigValue<TurningMode> turningModeWhenPicking;
+		private final ConfigValue<List<? extends String>> turnWhenKeybinds;
 		private final IntValue turningLockTime;
 		private final BooleanValue playerXRotFollowsCamera;
 		private final BooleanValue playerYRotFollowsCamera;
@@ -506,6 +508,11 @@ public class Config
 				.comment("Whether to turn the player when picking blocks or entities. This config option only applies when camera is decoupled.")
 				.translation(MOD_ID + ".configuration.player.turning.when_picking")
 				.defineEnum("when_picking", TurningMode.ALWAYS, TurningMode.values());
+			
+			this.turnWhenKeybinds = builder
+				.comment("Keybinds that will trigger the player to turn. This config option only applies when camera is decoupled.")
+				.translation(MOD_ID + ".configuration.player.turning.turn_when_keybinds")
+				.defineList("turn_when_keybinds", Lists.newArrayList("key.irons_spellbooks.spellbook_cast"), e -> e instanceof String);
 			
 			this.turningLockTime = builder
 				.comment("The time in ticks the player will remain turned after the interaction has ended. Set to 0 to disable. This config option only applies when camera is decoupled.")
@@ -1017,6 +1024,12 @@ public class Config
 		public TurningMode getTurningModeWhenPicking()
 		{
 			return this.turningModeWhenPicking.get();
+		}
+		
+		@Override
+		public List<? extends String> getTurnWhenKeybinds()
+		{
+			return this.turnWhenKeybinds.get();
 		}
 		
 		@Override

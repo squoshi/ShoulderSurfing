@@ -161,6 +161,7 @@ public interface IClientConfig
 	TurningMode getTurningModeWhenUsingItem();
 	TurningMode getTurningModeWhenAttacking();
 	TurningMode getTurningModeWhenInteracting();
+	List<? extends String> getTurnWhenKeybinds();
 	TurningMode getTurningModeWhenPicking();
 	
 	int getTurningLockTime();
